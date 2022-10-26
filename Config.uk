@@ -1,0 +1,9 @@
+menuconfig LIBTVM_RUNTIME
+    bool "libtvm_runtime Unikraft library"
+    default n
+
+if LIBTVM_RUNTIME
+config LIBTVM_RUNTIME_MAIN_FUNCTION
+    bool "Provide main function"
+    default n
+endif

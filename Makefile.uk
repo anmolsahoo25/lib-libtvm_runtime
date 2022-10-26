@@ -1,0 +1,95 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# libtvm_runtime Unikraft library
+#
+# Authors: Anmol Sahoo <anmol.sahoo25@gmail.com>
+#
+# Copyright (c) 2022, Anmol Sahoo <anmol.sahoo25@gmail.com>. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+################################################################################
+# Library registration
+################################################################################
+$(eval $(call addlib_s,libtvm_runtime,$(CONFIG_LIBTVM_RUNTIME)))
+
+################################################################################
+# Sources
+################################################################################]
+LIBTVM_RUNTIME_VERSION = 0.10.0
+LIBTVM_RUNTIME_URL = https://github.com/apache/tvm/archive/refs/tags/v$(LIBTVM_RUNTIME_VERSION).zip
+LIBTVM_RUNTIME_SUBDIR = tvm-$(LIBTVM_RUNTIME_VERSION)
+LIBTVM_RUNTIME_PATCHDIR = $(LIBTVM_RUNTIME_BASE)/patches
+$(eval $(call patch,libtvm_runtime,$(LIBTVM_RUNTIME_PATCHDIR),$(LIBTVM_RUNTIME_SUBDIR)))
+$(eval $(call fetch,libtvm_runtime,$(LIBTVM_RUNTIME_URL)))
+
+################################################################################
+# Helpers
+################################################################################
+LIBTVM_RUNTIME_SRC = $(LIBTVM_RUNTIME_ORIGIN)/$(LIBTVM_RUNTIME_SUBDIR)
+
+################################################################################
+# Library includes - includes provided by the library
+################################################################################
+CINCLUDES-y += -I$(LIBTVM_RUNTIME_BASE)/include -I$(LIBTVM_RUNTIME_SRC)/include
+CXXINCLUDES-y += -I$(LIBTVM_RUNTIME_BASE)/include -I$(LIBTVM_RUNTIME_SRC)/include
+
+################################################################################
+# Flags
+################################################################################
+LIBTVM_RUNTIME_FLAGS = -std=c++17 -DTVM_USE_LIBBACKTRACE=0 -Wno-unused-parameter
+
+LIBTVM_RUNTIME_CFLAGS-y += $(LIBTVM_RUNTIME_FLAGS)
+LIBTVM_RUNTIME_CXXFLAGS-y += $(LIBTVM_RUNTIME_FLAGS)
+
+################################################################################
+# Glue code - includes needed by library
+################################################################################
+# Include paths
+# LIBTVM_RUNTIME_CINCLUDES-y   += $(LIBTVM_RUNTIME_COMMON_INCLUDES-y)
+LIBTVM_RUNTIME_CINCLUDES-y += -I$(LIBTVM_RUNTIME_BASE)/include -I$(LIBTVM_RUNTIME_SRC)/include
+LIBTVM_RUNTIME_CXXINCLUDES-y += -I$(LIBTVM_RUNTIME_BASE)/include -I$(LIBTVM_RUNTIME_SRC)/include
+
+################################################################################
+# Library sources
+#################################################################################
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/c_runtime_api.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/container.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/cpu_device_api.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/file_utils.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/library_module.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/logging.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/module.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/ndarray.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/object.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/registry.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/thread_pool.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/threading_backend.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/workspace_pool.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/dso_library.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/system_library.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/graph_executor/graph_executor.cc
+LIBTVM_RUNTIME_SRCS-y += $(LIBTVM_RUNTIME_SRC)/src/runtime/graph_executor/graph_executor_factory.cc
